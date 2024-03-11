@@ -1,10 +1,7 @@
-scopes = ["https://www.googleapis.com/auth/youtube.readonly"]
+from googleapiclient.discovery import build
+from credentials import yt_api
 
-def main():
-    # Disable OAuthlib's HTTPS
-    # verification when running locally.
-    # enabled in production.
-    pass  # Placeholder to ensure the function is not empty
 
-if __name__ == "__main__":
-    main()
+def make_public_service(api_key: str):
+    service = build(serviceName="youtube", version="v3", developerKey="api key here")
+    return service

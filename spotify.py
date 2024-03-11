@@ -3,6 +3,7 @@ from spotipy.oauth2 import SpotifyClientCredentials
 from dotenv import load_dotenv
 import os
 import json
+from typing import Optional, Tuple, List, Dict
 
 load_dotenv()
 client_id = os.getenv("SP_CLIENT_ID")
@@ -16,7 +17,7 @@ def connect(cl_id: str, cl_secret: str) -> spotipy.Spotify:
     return spotify
    
 # Fetch playlist details
-def fetch_playlist_id(api, id: str):
+def fetch_playlist_id(api: spotipy.Spotify, id: str) -> Tuple[Optional[List], Optional[str]]:
     try:
         playlist_resp = api.playlist(playlist_id=id)
         name = playlist_resp["name"]
@@ -34,27 +35,34 @@ print(json.dumps(playlist_items))
 
 
 # Extract name, artists, album name
-def extract_playlist_data(api, items):
+def extract_playlist_data(api, track_items: List)  -> List[Dict]:  
+    """
+    Returns:
+        List[Dict]: A list of dictionaries containing track data.
+    """
+    
     tracks_data = []
     
-    for i in items: 
-        item = dict.fromkeys(["track_name", "artist_name", "album_name"])
+    for i in track_items: 
         track_name = i['track']['name']
         artist_name = i["track"]["artists"][0]["name"]
         album_name = i["track"]["album"]["name"]
         
-        item["track_name"] = track_name
-        item["artist_name"] = artist_name
-        item["album_name"] = album_name
-        
-        tracks_data.append(item)
-        print(item)
+        track_data = {
+            'track_name': track_name,
+            'artist_name': artist_name,
+            'album_name': album_name
+        }
+     
+        tracks_data.append(track_data)
+        print(tracks_data)
         return tracks_data
     
 # Queries to search on youtube
 def queries_builder(playlist_data):
     queries = []
     for obj in playlist_data:
-        query = "{} {} {}".format(obj['track_name'],obj['album_name'],obj['artist_name'])
+        # Construct a query string using track_name, album_name, and artist_name
+        query = f"{obj['track_name']} {obj['album_name']} {obj['artist_name']}"
         queries.append(query)
-        return queries 
+    return queries
