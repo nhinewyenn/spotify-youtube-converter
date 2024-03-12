@@ -17,7 +17,7 @@ def connect(cl_id: str, cl_secret: str) -> spotipy.Spotify:
     return spotify
    
 # Fetch playlist details
-def fetch_playlist_id(api: spotipy.Spotify, id: str) -> Tuple[Optional[List], Optional[str]]:
+def get_playlist_id(api: spotipy.Spotify, id: str) -> Tuple[Optional[List], Optional[str]]:
     try:
         playlist_resp = api.playlist(playlist_id=id)
         name = playlist_resp["name"]
@@ -30,7 +30,7 @@ def fetch_playlist_id(api: spotipy.Spotify, id: str) -> Tuple[Optional[List], Op
 pl_id="3zdRAg3wGmcjOkQp2D6JTH"
 
 api = connect(client_id, client_secret)
-playlist_items = fetch_playlist_id(api, pl_id)
+playlist_items = get_playlist_id(api, pl_id)
 print(json.dumps(playlist_items))
 
 
