@@ -2,6 +2,13 @@ from googleapiclient.discovery import build
 import time
 from google_auth_oauthlib.flow import InstalledAppFlow
 from typing import List
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+YT_API_KEY = os.getenv("") # we need to put the api key from the .env file here
+
 
 
 
