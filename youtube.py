@@ -1,16 +1,9 @@
+from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 import time
 from google_auth_oauthlib.flow import InstalledAppFlow
 from typing import List
 import os
-from dotenv import load_dotenv
-
-load_dotenv()
-
-YT_API_KEY = os.getenv("") # we need to put the api key from the .env file here
-
-
-
 
 def make_public_service(api_key: str):
     service = build(serviceName="youtube", version="v3", developerKey=api_key)
@@ -27,9 +20,58 @@ def get_vid_id(queries: List[str], api: str) -> List[str]:
         
         ids.append(vid_id)
         time.sleep(3)
-        return ids
+    return ids
     
+# Create service object to interact with youtube api
+def make_service() -> build:
+    credentials = None
+
+    # Load client secrets from file
+    client_secret_file = "client_secret.json"
+    if os.path.exists(client_secret_file):
+        flow = InstalledAppFlow.from_client_secrets_file(
+            client_secret_file,
+            scopes=["https://www.googleapis.com/auth/youtube"]
+        )
+        credentials = flow.run_local_server(port=8080, prompt="consent", authorization_prompt_message="")
     
-def make_service():
-    creds = None
-    flow = InstalledAppFlow.from_client_secrets_file("client_secrets.json", scopes=["https://www.googleapis.com/auth/youtube"],)
+    service = build(serviceName="youtube", version="v3", credentials=credentials)
+    return service
+
+def make_playlist(service, name):
+    """
+     Args:
+        service: A Google service object used to interact with the Google API.
+        name: A string representing the name of the playlist to be created.
+    """
+    
+    playlist = {
+        "snippet": {
+            "title": name
+        }
+    }
+
+    req = service.playlists().insert(
+        part="snippet",
+        body=playlist
+    )
+
+    res = req.execute()
+    return res['id']
+
+def add_item_to_playlist(service, playlist_id, items):
+    res = []
+    for i in items:
+        req = service.playlistItems().insert(
+             part="snippet",
+            body={
+                "snippet": {
+                    "playlistId": str(playlist_id),
+                    "resourceId": {"kind": "youtube#video", "videoId": i},
+                }
+            },
+        )
+        response = req.execute()
+        print("ADDED")
+        res.append(response)
+    return res 

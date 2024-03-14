@@ -19,19 +19,15 @@ def connect(cl_id: str, cl_secret: str) -> spotipy.Spotify:
 # Fetch playlist details
 def get_playlist_id(api: spotipy.Spotify, id: str) -> Tuple[Optional[List], Optional[str]]:
     try:
-        playlist_resp = api.playlist(playlist_id=id)
-        name = playlist_resp["name"]
-        playlist_items = playlist_resp["tracks"]["items"]
+        playlist = api.playlist(playlist_id=id)
+        name = playlist["name"]
+        playlist_items = playlist["tracks"]["items"]
         return playlist_items, name
     except Exception as error:
         print("Error fetching playlist:", error)
         return None, None
     
-pl_id="3zdRAg3wGmcjOkQp2D6JTH"
 
-api = connect(client_id, client_secret)
-playlist_items = get_playlist_id(api, pl_id)
-print(json.dumps(playlist_items))
 
 
 # Extract name, artists, album name
@@ -66,3 +62,13 @@ def queries_builder(playlist_data):
         query = f"{obj['track_name']} {obj['album_name']} {obj['artist_name']}"
         queries.append(query)
     return queries
+
+
+# TEST
+pl_id="3zdRAg3wGmcjOkQp2D6JTH"
+api = connect(client_id, client_secret)
+pl = get_playlist_id(api, pl_id)
+print("playlist data")
+print(json.dumps(pl))
+print("queries")
+print(queries_builder(extract_playlist_data(api,pl[0])))
