@@ -19,7 +19,6 @@ if not client_secret:
     logging.error("SP_CLIENT_SECRET is not set in the environment variables.")
     raise ValueError("SP_CLIENT_SECRET is not set in the environment variables.")
 
-
 # Establish connection with spotify api using spotipy
 def connect(cl_id: str, cl_secret: str) -> Optional[spotipy.Spotify]:
     try:
@@ -40,8 +39,6 @@ def get_playlist_id(api: spotipy.Spotify, id: str) -> Tuple[Optional[List], Opti
     except Exception as e:
         logging.error(f"Error fetching playlist: {e}")
         return None, None
-    
-
 
 
 # Extract name, artists, album name
